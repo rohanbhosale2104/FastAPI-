@@ -1,0 +1,9 @@
+to create an environment 
+->python -m venv myenv
+#myenv->is the name of your environment
+->myenv/Scripts/activate
+#to activate the environment we can use this command
+->pip install fastapi uvicorn pydantic
+#uvicorn(server) pydantic (to check the data is coming from the api is correct or not like type of datatype and other things)
+->uvicorn main:app --reload
+#main is the file name of python and --reload (is helps to do not reload the page again and again by changing the code it will automaticaly detect and protect from crash the server)

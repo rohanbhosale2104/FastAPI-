@@ -7,3 +7,49 @@ to create an environment
 #uvicorn(server) pydantic (to check the data is coming from the api is correct or not like type of datatype and other things)
 ->uvicorn main:app --reload
 #main is the file name of python and --reload (is helps to do not reload the page again and again by changing the code it will automaticaly detect and protect from crash the server)
+
+HTTP methods 
+1.C->Create
+2.R->Retrieve
+3.U->Update
+4.D->Delete
+path params->path params are dynamic segment of a URL path used to identify a specific Resource
+Example: localhost:8000/view/P001
+in the example P001 is dynamic part of url in which we can retrieve the perticular patient from the database by using patient_id
+
+@app.get("/patient/{patient_id}")
+def get_patient(patient_id:str=Path(...,description="The ID of the patient in the DB",example="P001")):
+    data=load_data()
+    if patient_id in data:
+        return data[patient_id]
+    else:
+        raise HTTPException(status_code=404,detail="Patient not Found.")
+
+Path(): Function is used to provide metadata ,validation,rules,and documentation hints for path parameters in your API Endpoints
+Like Title,Description,Example:ge(greater that equal to),gt(greater than),lt(less Than ),le(less than equal to),min_length,max_length
+
+HTTP Status Codes are Three digit number returned by web server(like FastAPI) to indicate the result of a clients requests 
+-whether the request was successuful
+-whether something went wrong
+-what kind of issue occured 
+Example:
+400->bad request
+401->invalid authentication
+403 -> forbidden 
+404-> Not Found
+HTTPException ->is a special built in exception in FastAPI used to return custom HTTP error responses when something goes wrong in your API 
+Query Parameters: optional key value pairs appended to the end of URL used to Pass Additional Data to the server in an HTTP request
+localhost:8000/patients?city=Delhi&sort_by=age
+
+@app.get("/sort")
+def sort_patients(sort_by:str=Query(...,description="sort on the basis of height,weight,bmi"),order:str=Query("asc",description="sort in ascending or desceding order")):
+    valid_fields=["height","weight","bmi"]
+    if sort_by not in valid_fields:
+        raise HTTPException(status_code=400,detail=f"Invalid Field Select from {valid_fields}")
+        #status code 400 means bad request
+    if order not in ["asc","desc"]:
+        raise HTTPException(status_code=400,detail="Invalid Order Select from ['asc','desc']")
+    data=load_data()
+    sort_order=True if order=="desc" else False
+    sorted_data=sorted(data.values(),key=lambda x:x.get(sort_by,0),reverse=sort_order)
+    return sorted_data
